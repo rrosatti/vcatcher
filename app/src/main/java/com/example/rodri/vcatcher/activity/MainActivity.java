@@ -1,7 +1,9 @@
-package com.example.rodri.vcatcher;
+package com.example.rodri.vcatcher.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.example.rodri.vcatcher.R;
 
 public class MainActivity extends AppCompatActivity {
 
