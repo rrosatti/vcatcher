@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.rodri.vcatcher.R;
+
 /**
  * Created by rodri on 11/2/2016.
  */
@@ -162,6 +164,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         // get data from getResources() and put them in levels and games array
+        levels = context.getResources().getStringArray(R.array.levels_array);
+        games = context.getResources().getStringArray(R.array.games_array);
     }
 
     @Override
@@ -202,10 +206,14 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     // Implement those methods later
     private void populateLevelTable(SQLiteDatabase db) {
-
+        for (int i=0; i<levels.length; i++) {
+            db.execSQL("INSERT INTO " + TABLE_LEVEL + " VALUES(" + (i+1) + ", " + levels[i] + ");");
+        }
     }
 
     private void populateGameTable(SQLiteDatabase db) {
-
+        for (int i=0; i<games.length; i++) {
+            db.execSQL("INSERT INTO " + TABLE_GAME + " VALUES(" + games[i] + ");");
+        }
     }
 }
