@@ -15,6 +15,8 @@ import com.example.rodri.vcatcher.model.User;
 import com.example.rodri.vcatcher.model.UserGame;
 import com.example.rodri.vcatcher.model.UserLevel;
 import com.example.rodri.vcatcher.model.Word;
+import com.example.rodri.vcatcher.model.WordDetails;
+import com.example.rodri.vcatcher.model.WordImage;
 
 /**
  * Created by rodri on 11/5/2016.
@@ -275,6 +277,53 @@ public class MyDataSource {
 
     }
 
+    public WordImage createWordImage(long wordId, long imageId) {
+        ContentValues values = new ContentValues();
+        values.put(MySQLiteHelper.COLUMN_WORD_ID, wordId);
+        values.put(MySQLiteHelper.COLUMN_IMAGE_ID, imageId);
+
+        database.insert(MySQLiteHelper.TABLE_WORD_IMAGE, null, values);
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_WORD_IMAGE, wordImageColumns,
+                MySQLiteHelper.COLUMN_WORD_ID + " = " + wordId + " AND" +
+                    MySQLiteHelper.COLUMN_IMAGE_ID  + " = " + imageId, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        WordImage newWordImage = cursorToWordImage(cursor);
+        cursor.close();
+
+        return newWordImage;
+
+    }
+
+    public WordDetails createWordDetails(long wordId, long lastPracticed, int strength, int correctTimes, int incorrectTimes) {
+        ContentValues values = new ContentValues();
+        values.put(MySQLiteHelper.COLUMN_WORD_ID, wordId);
+        values.put(MySQLiteHelper.COLUMN_LAST_PRACTICED, lastPracticed);
+        values.put(MySQLiteHelper.COLUMN_STRENGTH, strength);
+        values.put(MySQLiteHelper.COLUMN_CORRECT_TIMES, correctTimes);
+        values.put(MySQLiteHelper.COLUMN_INCORRECT_TIMES, incorrectTimes);
+
+        long insertedId = database.insert(MySQLiteHelper.TABLE_WORD_DETAILS, null, values);
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_WORD_DETAILS, wordDetailsColumns,
+                MySQLiteHelper.KEY_ID + " = " + insertedId, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        WordDetails newWordDetails = cursorToWordDetails(cursor);
+        cursor.close();
+
+        return newWordDetails;
+    }
+
     /** --- CURSOR TO --- */
 
     public Game cursorToGame(Cursor cursor) {
@@ -345,6 +394,24 @@ public class MyDataSource {
             hasImage = true;
         word.setHasImage(hasImage);
         return word;
+    }
+
+    public WordImage cursorToWordImage(Cursor cursor) {
+        WordImage wordImage = new WordImage();
+        wordImage.setWordId(cursor.getLong(0));
+        wordImage.setImageId(cursor.getLong(1));
+        return wordImage;
+    }
+
+    public WordDetails cursorToWordDetails(Cursor cursor) {
+        WordDetails wordDetails = new WordDetails();
+        wordDetails.setId(cursor.getLong(0));
+        wordDetails.setWordId(cursor.getLong(1));
+        wordDetails.setLastPracticed(cursor.getLong(2));
+        wordDetails.setStrength(cursor.getInt(3));
+        wordDetails.setCorrectTimes(cursor.getInt(4));
+        wordDetails.setIncorrectTimes(cursor.getInt(5));
+        return wordDetails;
     }
 
     /** --- EXTRAS --- */
