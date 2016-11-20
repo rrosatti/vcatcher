@@ -9,11 +9,11 @@ public class Word {
     private long id;
     private String name;
     private String translation;
-    private int hasImage;
+    private boolean hasImage;
 
     public Word() {}
 
-    public Word(long id, String name, String translation, int hasImage) {
+    public Word(long id, String name, String translation, boolean hasImage) {
         this.id = id;
         this.name = name;
         this.translation = translation;
@@ -44,11 +44,11 @@ public class Word {
         this.translation = translation;
     }
 
-    public int getHasImage() {
+    public boolean getHasImage() {
         return hasImage;
     }
 
-    public void setHasImage(int hasImage) {
+    public void setHasImage(boolean hasImage) {
         this.hasImage = hasImage;
     }
 }

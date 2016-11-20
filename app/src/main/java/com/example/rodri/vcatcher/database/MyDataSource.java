@@ -13,6 +13,8 @@ import com.example.rodri.vcatcher.model.Level;
 import com.example.rodri.vcatcher.model.Reminder;
 import com.example.rodri.vcatcher.model.User;
 import com.example.rodri.vcatcher.model.UserGame;
+import com.example.rodri.vcatcher.model.UserLevel;
+import com.example.rodri.vcatcher.model.Word;
 
 /**
  * Created by rodri on 11/5/2016.
@@ -225,6 +227,54 @@ public class MyDataSource {
         return newUserGame;
     }
 
+    public UserLevel createUserLevel(long userId, int num, int currentExperience) {
+        ContentValues values = new ContentValues();
+        values.put(MySQLiteHelper.COLUMN_USER_ID, userId);
+        values.put(MySQLiteHelper.COLUMN_NUM, num);
+        values.put(MySQLiteHelper.COLUMN_CURRENT_EXPERIENCE, currentExperience);
+
+        long insertedId = database.insert(MySQLiteHelper.TABLE_USER_LEVEL, null, values);
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_USER_LEVEL, userLevelColumns,
+                MySQLiteHelper.KEY_ID + " = " + insertedId, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        UserLevel newUserLevel = cursorToUserLevel(cursor);
+        cursor.close();
+
+        return newUserLevel;
+    }
+
+    public Word createWord(String name, String translation, boolean hasImage) {
+        ContentValues values = new ContentValues();
+        values.put(MySQLiteHelper.KEY_NAME, name);
+        values.put(MySQLiteHelper.COLUMN_TRANSLATION, translation);
+        int image = 0;
+        if (hasImage)
+            image = 1;
+        values.put(MySQLiteHelper.COLUMN_HAS_IMAGE, image);
+
+        long insertedId = database.insert(MySQLiteHelper.TABLE_WORD, null, values);
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_WORD, wordColumns,
+                MySQLiteHelper.KEY_ID + " = " + insertedId, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        Word newWord = cursorToWord(cursor);
+        cursor.close();
+
+        return newWord;
+
+    }
+
     /** --- CURSOR TO --- */
 
     public Game cursorToGame(Cursor cursor) {
@@ -274,6 +324,27 @@ public class MyDataSource {
         userGame.setWins(cursor.getInt(2));
         userGame.setLosses(cursor.getInt(3));
         return userGame;
+    }
+
+    public UserLevel cursorToUserLevel(Cursor cursor) {
+        UserLevel userLevel = new UserLevel();
+        userLevel.setId(cursor.getLong(0));
+        userLevel.setUserId(cursor.getLong(1));
+        userLevel.setNum(cursor.getInt(2));
+        userLevel.setCurrentExperience(cursor.getInt(3));
+        return userLevel;
+    }
+
+    public Word cursorToWord(Cursor cursor) {
+        Word word = new Word();
+        word.setId(cursor.getLong(0));
+        word.setName(cursor.getString(1));
+        word.setTranslation(cursor.getString(2));
+        boolean hasImage = false;
+        if (cursor.getInt(3) == 1)
+            hasImage = true;
+        word.setHasImage(hasImage);
+        return word;
     }
 
     /** --- EXTRAS --- */
