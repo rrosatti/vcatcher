@@ -5,10 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.provider.Settings;
 
 import com.example.rodri.vcatcher.model.Game;
 import com.example.rodri.vcatcher.model.Image;
 import com.example.rodri.vcatcher.model.Level;
+import com.example.rodri.vcatcher.model.Reminder;
+import com.example.rodri.vcatcher.model.User;
+import com.example.rodri.vcatcher.model.UserGame;
 
 /**
  * Created by rodri on 11/5/2016.
@@ -153,6 +157,74 @@ public class MyDataSource {
 
     }
 
+    public Reminder createReminder(long date, String message) {
+        ContentValues values = new ContentValues();
+        values.put(MySQLiteHelper.COLUMN_DATE, date);
+        values.put(MySQLiteHelper.COLUMN_MESSAGE, message);
+
+        long insertedId = database.insert(MySQLiteHelper.TABLE_REMINDER, null, values);
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_REMINDER, reminderColumns,
+                MySQLiteHelper.KEY_ID + " = " + insertedId, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        Reminder newReminder = cursorToReminder(cursor);
+        cursor.close();
+
+        return newReminder;
+
+    }
+
+    public User createUser(String name, String username, String password) {
+        ContentValues values = new ContentValues();
+        values.put(MySQLiteHelper.KEY_NAME, name);
+        values.put(MySQLiteHelper.COLUMN_USERNAME, username);
+        values.put(MySQLiteHelper.COLUMN_PASSWORD, password);
+
+        long insertedId = database.insert(MySQLiteHelper.TABLE_USER, null, values);
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_USER, userColumns,
+                MySQLiteHelper.KEY_ID + " = " + insertedId, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        User newUser = cursorToUser(cursor);
+        cursor.close();
+
+        return newUser;
+    }
+
+    public UserGame createUserGame(long userId, long gameId, int wins, int losses) {
+        ContentValues values = new ContentValues();
+        values.put(MySQLiteHelper.COLUMN_USER_ID, userId);
+        values.put(MySQLiteHelper.COLUMN_GAME_ID, gameId);
+        values.put(MySQLiteHelper.COLUMN_WINS, wins);
+        values.put(MySQLiteHelper.COLUMN_LOSSES, losses);
+
+        database.insert(MySQLiteHelper.TABLE_USER_GAME, null, values);
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_USER_GAME, userGameColumns,
+                MySQLiteHelper.COLUMN_USER_ID + " = " + userId + " AND " +
+                        MySQLiteHelper.COLUMN_GAME_ID + " = " + gameId, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        UserGame newUserGame = cursorToUserGame(cursor);
+        cursor.close();
+
+        return newUserGame;
+    }
+
     /** --- CURSOR TO --- */
 
     public Game cursorToGame(Cursor cursor) {
@@ -178,6 +250,32 @@ public class MyDataSource {
         return level;
     }
 
+    public Reminder cursorToReminder(Cursor cursor) {
+        Reminder reminder = new Reminder();
+        reminder.setId(cursor.getLong(0));
+        reminder.setDate(cursor.getLong(1));
+        reminder.setMessage(cursor.getString(2));
+        return reminder;
+    }
+
+    public User cursorToUser(Cursor cursor) {
+        User user = new User();
+        user.setId(cursor.getLong(0));
+        user.setName(cursor.getString(1));
+        user.setUsername(cursor.getString(2));
+        user.setPassword(cursor.getString(3));
+        return user;
+    }
+
+    public UserGame cursorToUserGame(Cursor cursor) {
+        UserGame userGame = new UserGame();
+        userGame.setUserId(cursor.getLong(0));
+        userGame.setGameId(cursor.getLong(1));
+        userGame.setWins(cursor.getInt(2));
+        userGame.setLosses(cursor.getInt(3));
+        return userGame;
+    }
+
     /** --- EXTRAS --- */
 
     public boolean isCursorEmpty(Cursor cursor) {
@@ -185,6 +283,7 @@ public class MyDataSource {
         if (cursor.moveToFirst()) {
             return false;
         } else {
+            System.out.println("The cursor is empty!");
             return true;
         }
     }
