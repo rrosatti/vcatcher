@@ -480,6 +480,55 @@ public class MyDataSource {
         return level;
     }
 
+    public Reminder getReminder(long id) {
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_REMINDER, reminderColumns,
+                MySQLiteHelper.KEY_ID + " = " + id, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        Reminder reminder = cursorToReminder(cursor);
+        cursor.close();
+
+        return reminder;
+    }
+
+    public User getUser(long id) {
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_USER, userColumns,
+                MySQLiteHelper.KEY_ID + " = " + id, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        User user = cursorToUser(cursor);
+        cursor.close();
+
+        return user;
+    }
+
+    public UserGame getUserGame(long userId, long gameId) {
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_USER_GAME, userGameColumns,
+                MySQLiteHelper.COLUMN_USER_ID + " = " + userId + " AND " + MySQLiteHelper.COLUMN_GAME_ID + " = " + gameId,
+                null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        UserGame userGame = cursorToUserGame(cursor);
+        cursor.close();
+
+        return userGame;
+    }
+
     /** --- EXTRAS --- */
 
     public boolean isCursorEmpty(Cursor cursor) {
