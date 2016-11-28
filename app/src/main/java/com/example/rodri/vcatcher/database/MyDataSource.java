@@ -414,6 +414,72 @@ public class MyDataSource {
         return wordDetails;
     }
 
+    /** --- GET --- */
+
+    public Game getGame(long id) {
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_GAME, gameColumns,
+                MySQLiteHelper.KEY_ID + " = " + id, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        Game game = cursorToGame(cursor);
+        cursor.close();
+
+        return game;
+    }
+
+    public Image getImage(long id) {
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_IMAGE, imageColumns,
+                MySQLiteHelper.KEY_ID + " = " + id, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        Image image = cursorToImage(cursor);
+        cursor.close();
+
+        return image;
+    }
+
+    public Level getLevel(long id) {
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_LEVEL, levelColumns,
+                MySQLiteHelper.KEY_ID + " = " + id, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        Level level = cursorToLevel(cursor);
+        cursor.close();
+
+        return level;
+    }
+
+    public Level getLevel(int num) {
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_LEVEL, levelColumns,
+                MySQLiteHelper.COLUMN_NUM + " = " + num, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        Level level = cursorToLevel(cursor);
+        cursor.close();
+
+        return level;
+    }
+
     /** --- EXTRAS --- */
 
     public boolean isCursorEmpty(Cursor cursor) {
