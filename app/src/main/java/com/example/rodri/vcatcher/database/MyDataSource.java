@@ -529,6 +529,59 @@ public class MyDataSource {
         return userGame;
     }
 
+    public UserLevel getUserLevel(long userId) {
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_USER_LEVEL, userGameColumns,
+                MySQLiteHelper.COLUMN_USER_ID + " = " + userId, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        UserLevel userLevel = cursorToUserLevel(cursor);
+        cursor.close();
+
+        return userLevel;
+    }
+
+    /**
+     * I could also implement a getWord() method passing the word name as parameter.
+     */
+
+    public Word getWord(long id) {
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_WORD, wordColumns,
+                MySQLiteHelper.KEY_ID + " = " + id, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        Word word = cursorToWord(cursor);
+        cursor.close();
+
+        return word;
+    }
+
+    public WordDetails getWordDetails(long wordId) {
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_WORD_DETAILS, wordDetailsColumns,
+                MySQLiteHelper.COLUMN_WORD_ID + " = " + wordId, null, null, null, null, null);
+
+        if (isCursorEmpty(cursor)) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+
+        WordDetails wordDetails = cursorToWordDetails(cursor);
+        cursor.close();
+
+        return wordDetails;
+    }
+    
+
     /** --- EXTRAS --- */
 
     public boolean isCursorEmpty(Cursor cursor) {
